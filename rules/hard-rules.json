@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "name": "default workspace hard rules",
+  "acknowledgement": {
+    "require": true,
+    "phrase": "I have read and will honour the hard rules of this workspace."
+  },
+  "location": {
+    "country": "FI",
+    "region": "eu",
+    "timezone": "Europe/Helsinki",
+    "live_language_primary": "en",
+    "languages_served": ["en", "fi"]
+  },
+  "budget": {
+    "currency": "EUR",
+    "max_monthly_spend_units": 200,
+    "max_single_task_spend_units": 20,
+    "forbidden_models": ["*opus*", "*sonnet*", "*1319*", "*-top*"],
+    "allowed_models": ["anthropic/claude-haiku-4-6"],
+    "prefer_open_source": true
+  },
+  "infra": {
+    "hosting_region_allowlist": ["eu"],
+    "data_residency": ["eu"],
+    "cloud_provider_allowlist": [
+      "cloudflare",
+      "hetzner",
+      "fly.io",
+      "vercel",
+      "supabase",
+      "eu-central",
+      "europe-west",
+      "europe-north"
+    ],
+    "must_have": [
+      "gdpr",
+      "privacy-by-default",
+      "tls-in-transit",
+      "data-encrypted-at-rest"
+    ],
+    "forbidden_tech": [
+      "us-only-cloud-as-primary",
+      "third-party-trackers",
+      "sharing-personal-data-with-analytics"
+    ]
+  },
+  "legal": {
+    "jurisdiction_codes": ["fi", "eu"],
+    "must_comply": [
+      "gdpr",
+      "eu-digital-services-act",
+      "right-to-erasure",
+      "cookie-consent-before-trackers"
+    ],
+    "age_gate_required": false,
+    "consent_required_features": ["tracking", "marketing-email", "cookies"]
+  },
+  "service_level": {
+    "max_acceptable_latency_ms": 300,
+    "uptime_target": 99.5,
+    "notes": [
+      "Primary users are in Europe (Finland); keep services in the EU.",
+      "Never route user data through non-EU infrastructure."
+    ]
+  },
+  "enforcement": {
+    "deny_tools": [],
+    "deny_until_acknowledged": [
+      "bash",
+      "edit",
+      "write",
+      "create",
+      "patch",
+      "webfetch",
+      "websearch",
+      "task"
+    ],
+    "bash_forbidden_patterns": [
+      "\\bgit push\\b.*--force",
+      "npm publish",
+      "rm -rf /",
+      "us-central1",
+      "us-east-1",
+      "aws s3[^ ]*--region us-"
+    ],
+    "write_forbidden_paths": [
+      "**/.env",
+      "**/.env.*",
+      "**/*secret*/**",
+      "**/*credential*/**"
+    ],
+    "webfetch_forbidden_hosts": []
+  },
+  "extra_rules": [
+    "Anything you build must serve real users in Europe best and must not rely on non-EU hosting or data processing.",
+    "If a task cannot be completed within the configured budget, stop and ask the user instead of silently going over.",
+    "Never store personal data beyond what the feature explicitly requires, and never add analytics or trackers without explicit consent support.",
+    "Prefer plain, boring infrastructure (static files, serverless in EU regions, managed Postgres in EU) over exotic stacks that add cost or latency."
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://hard-rules.dev/schema/rules.schema.json",
+  "title": "opencode hard rules",
+  "description": "Hard, non-negotiable constraints that every opencode session must honour.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "acknowledgement"],
+  "properties": {
+    "version": { "const": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "acknowledgement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["require", "phrase"],
+      "properties": {
+        "require": { "type": "boolean" },
+        "phrase": { "type": "string", "minLength": 1 }
+      }
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "country": { "type": "string", "pattern": "^[A-Z]{2}$" },
+        "region": { "type": "string" },
+        "timezone": { "type": "string" },
+        "live_language_primary": { "type": "string" },
+        "languages_served": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "currency": { "type": "string", "minLength": 1 },
+        "max_monthly_spend_units": { "type": "number", "minimum": 0 },
+        "max_single_task_spend_units": { "type": "number", "minimum": 0 },
+        "forbidden_models": { "type": "array", "items": { "type": "string" } },
+        "allowed_models": { "type": "array", "items": { "type": "string" } },
+        "prefer_open_source": { "type": "boolean" },
+        "cost_checkpoint_threshold_units": { "type": ["number", "null"] }
+      }
+    },
+    "infra": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hosting_region_allowlist": { "type": "array", "items": { "type": "string" } },
+        "data_residency": { "type": "array", "items": { "type": "string" } },
+        "cloud_provider_allowlist": { "type": "array", "items": { "type": "string" } },
+        "cloud_provider_denylist": { "type": "array", "items": { "type": "string" } },
+        "must_have": { "type": "array", "items": { "type": "string" } },
+        "forbidden_tech": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "legal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "jurisdiction_codes": { "type": "array", "items": { "type": "string" } },
+        "must_comply": { "type": "array", "items": { "type": "string" } },
+        "age_gate_required": { "type": "boolean" },
+        "consent_required_features": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "service_level": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_acceptable_latency_ms": { "type": "number", "minimum": 0 },
+        "uptime_target": { "type": "number", "minimum": 0, "maximum": 100 },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "enforcement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "deny_tools": { "type": "array", "items": { "type": "string" } },
+        "deny_until_acknowledged": { "type": "array", "items": { "type": "string" } },
+        "bash_forbidden_patterns": { "type": "array", "items": { "type": "string" } },
+        "write_forbidden_paths": { "type": "array", "items": { "type": "string" } },
+        "webfetch_forbidden_hosts": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "extra_rules": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

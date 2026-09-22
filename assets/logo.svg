@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="hard-rules logo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#34d399"/>
+      <stop offset="1" stop-color="#10b981"/>
+    </linearGradient>
+    <linearGradient id="check" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a7f3d0"/>
+      <stop offset="1" stop-color="#6ee7b7"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="104" fill="url(#bg)"/>
+
+  <!-- decorative dots -->
+  <g fill="#334155">
+    <circle cx="96" cy="96" r="4"/><circle cx="160" cy="96" r="4"/><circle cx="96" cy="160" r="4"/>
+    <circle cx="416" cy="96" r="4"/><circle cx="416" cy="160" r="4"/><circle cx="352" cy="96" r="4"/>
+    <circle cx="96" cy="416" r="4"/><circle cx="160" cy="416" r="4"/>
+    <circle cx="416" cy="416" r="4"/><circle cx="352" cy="416" r="4"/>
+  </g>
+
+  <!-- shield -->
+  <path d="M256 80 L388 124 V286 C388 352 330 400 256 432 C182 400 124 352 124 286 V124 Z"
+        fill="url(#shield)" opacity="0.14"/>
+  <path d="M256 80 L388 124 V286 C388 352 330 400 256 432 C182 400 124 352 124 286 V124 Z"
+        fill="none" stroke="#34d399" stroke-width="10" stroke-linejoin="round"/>
+
+  <!-- checkmark -->
+  <path d="M196 268 L240 312 L324 218"
+        fill="none" stroke="url(#check)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- rule lines inside shield -->
+  <g stroke="#475569" stroke-width="7" stroke-linecap="round" opacity="0.55">
+    <path d="M196 352 L300 352 M196 388 L262 388"/>
+  </g>
+
+  <text x="256" y="476" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif"
+        font-size="44" font-weight="800" letter-spacing="3" fill="#f8fafc">HARD<span fill="#34d399">RULES</span></text>
+  <text x="256" y="502" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif"
+        font-size="17" font-weight="500" letter-spacing="6" fill="#64748b">FOR OPENCODE</text>
+</svg>

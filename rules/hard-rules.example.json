@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "name": "eu-first product company",
+  "acknowledgement": {
+    "require": true,
+    "phrase": "Hard rules acknowledged."
+  },
+  "location": {
+    "country": "DE",
+    "region": "eu",
+    "timezone": "Europe/Berlin",
+    "live_language_primary": "de",
+    "languages_served": ["de", "en"]
+  },
+  "budget": {
+    "currency": "EUR",
+    "max_monthly_spend_units": 500,
+    "max_single_task_spend_units": 50,
+    "forbidden_models": ["*opus*"],
+    "allowed_models": [],
+    "prefer_open_source": false,
+    "cost_checkpoint_threshold_units": 25
+  },
+  "infra": {
+    "hosting_region_allowlist": ["eu"],
+    "data_residency": ["eu"],
+    "cloud_provider_allowlist": ["hetzner", "scaleway", "ovh"],
+    "cloud_provider_denylist": ["heroku", "railway"],
+    "must_have": ["gdpr", "dpa-with-subprocessors", "backup-restore-tested"],
+    "forbidden_tech": ["us-cloud-primary", "mixed-analytics", "plaintext-passwords"]
+  },
+  "legal": {
+    "jurisdiction_codes": ["de", "eu"],
+    "must_comply": ["gdpr", "eu-ai-act", "ttsg", "right-to-erasure"],
+    "age_gate_required": true,
+    "consent_required_features": ["tracking", "cookies", "marketing-email"]
+  },
+  "service_level": {
+    "max_acceptable_latency_ms": 250,
+    "uptime_target": 99.9,
+    "notes": ["German-language users first; English is secondary."]
+  },
+  "enforcement": {
+    "deny_tools": ["task"],
+    "deny_until_acknowledged": ["bash", "edit", "write", "webfetch"],
+    "bash_forbidden_patterns": ["deploy --force", "kubectl.*--namespace default"],
+    "write_forbidden_paths": [".github/workflows/*"],
+    "webfetch_forbidden_hosts": ["doubleclick.net", "facebook.com"]
+  },
+  "extra_rules": [
+    "Every user-facing string must ship in German and English from day one.",
+    "If a feature requires legal review, stop and flag it instead of shipping."
+  ]
+}

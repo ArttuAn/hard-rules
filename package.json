@@ -1,0 +1,64 @@
+{
+  "name": "opencode-hard-rules",
+  "version": "0.1.0",
+  "description": "Hard, non-negotiable constraints — budget, jurisdiction, infrastructure, legal — injected into every opencode session and mechanically enforced by a plugin.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Arttu Antikainen <arttu.antikainen@outlook.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArttuAn/hard-rules.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ArttuAn/hard-rules/issues"
+  },
+  "homepage": "https://github.com/ArttuAn/hard-rules#readme",
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "plugin",
+    "agent-guardrails",
+    "hard-constraints",
+    "agent-governance",
+    "budget-guard",
+    "gdpr",
+    "data-residency",
+    "eu-first",
+    "privacy-by-default",
+    "rules",
+    "zero-dependency"
+  ],
+  "main": "./plugin/index.mjs",
+  "types": "./plugin/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./plugin/index.d.mts",
+      "import": "./plugin/index.mjs"
+    },
+    "./lib/rules": "./lib/rules.mjs",
+    "./lib/render": "./lib/render.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "plugin",
+    "lib",
+    "bin",
+    "rules",
+    "assets",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "test": "node --test test/rules.test.mjs",
+    "status": "node bin/hard-rules.mjs status",
+    "validate": "node bin/hard-rules.mjs validate",
+    "render": "node bin/hard-rules.mjs render",
+    "install": "node bin/hard-rules.mjs install",
+    "uninstall": "node bin/hard-rules.mjs uninstall"
+  },
+  "engines": {
+    "node": ">=18",
+    "opencode": ">=1.0"
+  }
+}
