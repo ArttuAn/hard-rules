@@ -1,5 +1,10 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
+import { spawnSync } from "node:child_process"
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs"
+import { tmpdir } from "node:os"
+import path from "node:path"
+import { fileURLToPath } from "node:url"
 
 import {
   ACKNOWLEDGEMENT_TOOL,
@@ -201,4 +206,42 @@ test("plugin loads, injects rules, and gates tools", async () => {
     blocked2 = err.message
   }
   assert.match(blocked2, /npm publish/)
+})
+
+// ---------------------------------------------------------------- cli status
+
+const RULE_GROUP_FIXTURE = (groups) => ({
+  version: 1,
+  acknowledgement: { require: true, phrase: "I have read and will honour the hard rules of this workspace." },
+  ...groups,
+})
+
+function runStatus(rules) {
+  const dir = mkdtempSync(path.join(tmpdir(), "hard-rules-status-"))
+  const file = path.join(dir, "hard-rules.json")
+  writeFileSync(file, JSON.stringify(rules))
+  const cli = fileURLToPath(new URL("../bin/hard-rules.mjs", import.meta.url))
+  const res = spawnSync(process.execPath, [cli, "status", file], { encoding: "utf8" })
+  rmSync(dir, { recursive: true, force: true })
+  assert.equal(res.status, 0, res.stderr)
+  return res.stdout
+}
+
+test("status lists only the rule groups present in the file", () => {
+  const out = runStatus(RULE_GROUP_FIXTURE({ budget: { currency: "EUR" } }))
+  assert.match(out, /^ {2}groups: +budget$/m)
+})
+
+test("status lists present groups in a stable order", () => {
+  const out = runStatus(RULE_GROUP_FIXTURE({
+    enforcement: { deny_tools: ["task"] },
+    budget: { currency: "EUR" },
+    location: { country: "FI" },
+  }))
+  assert.match(out, /^ {2}groups: +location, budget, enforcement$/m)
+})
+
+test("status says none when the file defines no rule groups", () => {
+  const out = runStatus(RULE_GROUP_FIXTURE({}))
+  assert.match(out, /^ {2}groups: +\(none\)$/m)
 })

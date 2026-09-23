@@ -40,6 +40,10 @@ const HARD_RULES_USER_FILE = () => {
   return userRulesPath()
 }
 
+// Top-level rule groups, in the order status prints them.
+const RULE_GROUPS = ["location", "budget", "infra", "legal", "service_level", "enforcement"]
+const isPresentGroup = (v) => v !== null && typeof v === "object" && !Array.isArray(v)
+
 // ---------------------------------------------------------------- commands
 
 function cmdStatus(arg) {
@@ -67,7 +71,8 @@ function cmdStatus(arg) {
     ["banned tools", r.enforcement?.deny_tools?.length ?? 0],
   ]
   console.log(`  status:    ${color("green", "ok")} (${r.name ?? "unnamed"})`)
-  console.log(`  groups:    location, budget, infra, legal, service_level, enforcement`)
+  const groups = RULE_GROUPS.filter((g) => isPresentGroup(r[g]))
+  console.log(`  groups:    ${groups.length ? groups.join(", ") : "(none)"}`)
   for (const [label, n] of summary) if (n > 0) console.log(`  ${label}:     ${n}`)
   console.log(`  ack:       ${ack.require === false ? "not required" : `required — "${ack.phrase}"`}`)
   console.log(`  enforce:   acknowledgment gate = ${color("bold", (ack.require ?? true) ? "ON" : "OFF")}`)
