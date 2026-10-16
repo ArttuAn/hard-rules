@@ -1,7 +1,7 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
 import { spawnSync } from "node:child_process"
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs"
+import { mkdtempSync, rmSync, writeFileSync, mkdirSync, symlinkSync } from "node:fs"
 import { tmpdir } from "node:os"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
@@ -244,4 +244,41 @@ test("status lists present groups in a stable order", () => {
 test("status says none when the file defines no rule groups", () => {
   const out = runStatus(RULE_GROUP_FIXTURE({}))
   assert.match(out, /^ {2}groups: +\(none\)$/m)
+})
+
+
+test("missing rules deny execution", () => {
+  assert.equal(evaluateToolCall({ tool: "bash", rules: null }).allowed, false)
+})
+
+test("path restrictions block dot-dot and symlink aliases, including new files", () => {
+  const root = mkdtempSync(path.join(tmpdir(), "hard-rules-paths-"))
+  try {
+    mkdirSync(path.join(root, "private"))
+    mkdirSync(path.join(root, "src"))
+    symlinkSync(path.join(root, "private"), path.join(root, "alias"), "dir")
+    const rules = { acknowledgement: { require: false }, enforcement: { write_forbidden_paths: [`${root}/private/**`] } }
+    for (const filePath of [`${root}/private/key.txt`, `${root}/src/../private/key.txt`, `${root}/alias/new/key.txt`]) {
+      assert.equal(evaluateToolCall({ tool: "write", args: { filePath }, rules }).allowed, false, filePath)
+    }
+    assert.equal(evaluateToolCall({ tool: "write", args: { filePath: `${root}/src/ok.txt` }, rules }).allowed, true)
+    assert.equal(evaluateToolCall({ tool: "patch", args: {}, rules }).allowed, false)
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})
+
+
+test("plugin denies tool and permission hooks when the rules file cannot load", async () => {
+  const previous = process.env.HARD_RULES_FILE
+  process.env.HARD_RULES_FILE = "/nonexistent/security-test-rules.json"
+  try {
+    const { default: HardRulesPlugin } = await import("../plugin/index.mjs")
+    const hooks = await HardRulesPlugin({ client: { app: { log: async () => {} } } })
+    await assert.rejects(hooks["tool.execute.before"]({ tool: "bash", sessionID: "blocked" }, { args: { command: "echo test" } }), /unavailable/)
+    const permission = { status: "ask" }
+    await hooks["permission.ask"]({ title: "bash" }, permission)
+    assert.equal(permission.status, "deny")
+  } finally {
+    if (previous === undefined) delete process.env.HARD_RULES_FILE
+    else process.env.HARD_RULES_FILE = previous
+  }
 })
