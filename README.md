@@ -46,9 +46,16 @@ Three enforcement layers, in order of strength:
 | 2. **Acknowledgement gate** | Custom `acknowledge_hard_rules` tool. Gated tools (default: `bash`, `edit`, `write`, `create`, `patch`, `webfetch`, `websearch`, `task`) are **denied** until the session has called it with the exact configured phrase | The agent must acknowledge before it can build |
 | 3. **Mechanical deny** | `tool.execute.before` throws (and `permission.ask` denies) on: banned tools, forbidden command patterns, forbidden file paths, blocked web hosts; plus `config` rewrites any configured model matching `budget.forbidden_models` | Things that can be checked at the tool-call boundary |
 
-Failure mode is **fail-open but loud**: if the rules file is missing or invalid the
-plugin never breaks opencode, but every prompt starts with a warning block saying
-enforcement is off.
+Failure mode is **fail-closed**: missing or invalid rules block tool execution
+and permission requests. Fix the rules file outside the gated session and restart
+opencode. Prompts include the configuration error.
+
+Path checks compare literal, absolute normalized, and filesystem-resolved paths,
+including existing symlink ancestors of new files. Restricted write tools must
+provide a filePath. These hooks are an additional policy check: shell regexes
+cannot constrain arbitrary programs, and a concurrent filesystem change between
+a check and the actual write remains possible. Use OS filesystem permissions or
+an OS sandbox where a hard isolation boundary is required.
 
 ## 🚀 Quick start
 

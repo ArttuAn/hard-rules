@@ -12,9 +12,8 @@
 //   4. At startup, replaces configured models that match budget.forbidden_models
 //      when an allowed list is configured (budget enforcement).
 //
-// Failure behaviour: if the rules file is missing or invalid, the plugin does
-// NOT break opencode (fail-open) but injects a loud warning into every prompt
-// and logs the error. Run `hard-rules validate` to see what is wrong.
+// Failure behaviour: missing or invalid rules deny tool execution and permissions.
+// Repair the configuration outside the gated session, then restart opencode.
 
 import {
   ACKNOWLEDGEMENT_TOOL,
@@ -112,7 +111,7 @@ export const HardRulesPlugin = async ({ client }) => {
 
     // Primary enforcement point.
     "tool.execute.before": async (input, output) => {
-      if (!state.rules) return
+      if (!state.rules) throw new Error("Hard rules are unavailable. Fix the rules file and restart opencode.")
       const sessionID = input.sessionID
       const verdict = evaluateToolCall({
         tool: input.tool,
@@ -133,7 +132,11 @@ export const HardRulesPlugin = async ({ client }) => {
     // Defence-in-depth: also deny at the permission gate, so a gated tool can
     // never slip through even if the before-hook ordering changes.
     "permission.ask": async (input, output) => {
-      if (!state.rules || !output) return
+      if (!output) return
+      if (!state.rules) {
+        output.status = "deny"
+        return
+      }
       if (output.status === "deny") return
       const title = String(input?.title ?? "")
       const toolName =
