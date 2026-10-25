@@ -50,11 +50,11 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "test": "node --test test/rules.test.mjs",
+    "test": "node --test test/*.test.mjs",
     "status": "node bin/hard-rules.mjs status",
     "validate": "node bin/hard-rules.mjs validate",
     "render": "node bin/hard-rules.mjs render",
-    "install": "node bin/hard-rules.mjs install",
+    "setup": "node bin/hard-rules.mjs install",
     "uninstall": "node bin/hard-rules.mjs uninstall"
   },
   "engines": {

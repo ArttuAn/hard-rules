@@ -99,6 +99,12 @@ hard-rules new [file]             # write a fresh template
 hard-rules install | uninstall    # link/unlink the global plugin + CLI
 ```
 
+Package installation does not change global editor configuration. Run
+`npm run setup` or `hard-rules install` explicitly to register the plugin.
+`VISUAL` / `EDITOR` must name one executable (a path with spaces is supported),
+not a shell command. Use a wrapper executable if the editor needs extra flags;
+rule filenames are passed as literal arguments without shell evaluation.
+
 Environment overrides:
 
 - `HARD_RULES_FILE` — path to the rules JSON (default: `~/.config/hard-rules/hard-rules.json`).
