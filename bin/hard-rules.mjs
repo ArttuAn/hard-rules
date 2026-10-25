@@ -2,7 +2,7 @@
 // hard-rules CLI: status / validate / render / edit / new / install / uninstall.
 // Zero npm dependencies.
 
-import { copyFileSync, existsSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs"
+import { constants, copyFileSync, chmodSync, existsSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs"
 import { homedir } from "node:os"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
@@ -31,8 +31,9 @@ function resolvedFile(arg) {
 function scaffoldUserRules() {
   const file = HARD_RULES_USER_FILE()
   if (existsSync(file)) return file
-  mkdirSync(path.dirname(file), { recursive: true })
-  copyFileSync(DEFAULT_TEMPLATE, file)
+  mkdirSync(path.dirname(file), { recursive: true, mode: 0o700 })
+  copyFileSync(DEFAULT_TEMPLATE, file, constants.COPYFILE_EXCL)
+  chmodSync(file, 0o600)
   return file
 }
 const HARD_RULES_USER_FILE = () => {
@@ -114,8 +115,9 @@ function cmdNew(arg) {
     process.exitCode = 1
     return
   }
-  mkdirSync(path.dirname(file), { recursive: true })
-  copyFileSync(DEFAULT_TEMPLATE, file)
+  mkdirSync(path.dirname(file), { recursive: true, mode: 0o700 })
+  copyFileSync(DEFAULT_TEMPLATE, file, constants.COPYFILE_EXCL)
+  chmodSync(file, 0o600)
   console.log(color("green", `✓ Wrote rules template to ${file}`))
   console.log(color("dim", "  Edit it now (hard-rules edit), then restart opencode to enforce."))
 }
@@ -124,7 +126,9 @@ function cmdEdit(arg) {
   const file = arg ? path.resolve(arg) : scaffoldUserRules()
   if (!existsSync(file)) cmdNew(file)
   const editor = process.env.VISUAL || process.env.EDITOR || "vi"
-  const res = spawnSync(editor, [file], { stdio: "inherit", shell: true })
+  // The filename is untrusted input. A shell would interpret characters such
+  // as `;`, `&`, or command substitutions instead of passing one literal path.
+  const res = spawnSync(editor, [file], { stdio: "inherit", shell: false })
   if (res.status !== 0) {
     console.error(color("red", `Editor "${editor}" exited with status ${res.status ?? "error"}.`))
     process.exitCode = 1
